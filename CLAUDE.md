@@ -18,6 +18,11 @@ Arcade Vault — online arcade platform where users play games and compete for h
 - Path alias `@/*` maps to the repo root (`tsconfig.json`).
 - Styling via Tailwind CSS v4 through `@tailwindcss/postcss` (`postcss.config.mjs`), global styles in `app/globals.css`.
 
+
+## 
+Utiliza siempre la skill frontend-design cuando sea necesario construir interfaces de usuario.
+
+
 ## Spec-driven workflow
 
 Per README.md, this project follows spec-driven design using `/spec` and `/spec-impl`, based on practices from https://github.com/Klerith/fernando-skills. Skills are added via:
