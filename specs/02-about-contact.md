@@ -62,15 +62,15 @@ type SendStatus = "idle" | "loading" | "success" | "error";
 
 ## Acceptance criteria
 
-- [ ] `/about` muestra la página "Acerca de" (hero, highlights, divider, formulario contacto) sin errores en consola.
-- [ ] Nav muestra link "Acerca de" (desktop y mobile), resalta activo en `/about`.
-- [ ] Enviar el formulario con campos vacíos dispara el `shake` y no envía nada.
-- [ ] Enviar el formulario con datos válidos muestra estado `loading` en el botón mientras se procesa.
-- [ ] Envío exitoso llega como correo real a `fedef0188@gmail.com`, con asunto `Nuevo mensaje de contacto — Arcade Vault`, cuerpo con nombre/email/mensaje, y `reply-to` = email del formulario.
-- [ ] Envío exitoso muestra la pantalla `terminal-success` igual al template, con botón "ENVIAR OTRO MENSAJE" que resetea el formulario.
-- [ ] Si el envío falla (error de Resend/red), se muestra estado de error visible dentro del panel terminal, sin romper la página.
-- [ ] `RESEND_API_KEY` no queda hardcodeada en el código ni versionada en git.
-- [ ] Página responsive, no rompe layout en mobile.
+- [x] `/about` muestra la página "Acerca de" (hero, highlights, divider, formulario contacto) sin errores en consola.
+- [x] Nav muestra link "Acerca de" (desktop y mobile), resalta activo en `/about`.
+- [x] Enviar el formulario con campos vacíos dispara el `shake` y no envía nada.
+- [x] Enviar el formulario con datos válidos muestra estado `loading` en el botón mientras se procesa.
+- [x] Envío exitoso llega como correo real a `fedef0188@gmail.com`, con asunto `Nuevo mensaje de contacto — Arcade Vault`, cuerpo con nombre/email/mensaje, y `reply-to` = email del formulario.
+- [x] Envío exitoso muestra la pantalla `terminal-success` igual al template, con botón "ENVIAR OTRO MENSAJE" que resetea el formulario.
+- [x] Si el envío falla (error de Resend/red), se muestra estado de error visible dentro del panel terminal, sin romper la página.
+- [x] `RESEND_API_KEY` no queda hardcodeada en el código ni versionada en git.
+- [x] Página responsive, no rompe layout en mobile.
 
 ## Decisions
 
