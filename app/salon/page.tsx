@@ -1,17 +1,54 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { VISIBLE_GAMES, seededScores } from "@/lib/data";
+import { createClient } from "@/lib/supabase/client";
+import type { GameWithStats, ScoreRow } from "@/lib/data";
 import { useUser } from "@/app/providers";
 
 export default function HallOfFame() {
   const { user } = useUser();
-  const [tab, setTab] = useState(VISIBLE_GAMES[0].id);
-  const rows = useMemo(() => seededScores(tab.length * 23 + 7, 12), [tab]);
-  const game = VISIBLE_GAMES.find((g) => g.id === tab)!;
-  const youRank = user ? Math.floor(8 + (tab.length % 4)) : null;
-  const youScore = user ? rows[5]?.score - 2400 : null;
+  const supabase = useMemo(() => createClient(), []);
+  const [games, setGames] = useState<GameWithStats[]>([]);
+  const [tab, setTab] = useState<string | null>(null);
+  const [rows, setRows] = useState<ScoreRow[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("games_with_stats")
+      .select("*")
+      .order("id")
+      .then(({ data }) => {
+        const list = (data as GameWithStats[]) ?? [];
+        setGames(list);
+        if (list.length > 0) setTab(list[0].id);
+      });
+  }, [supabase]);
+
+  useEffect(() => {
+    if (!tab) return;
+    supabase
+      .from("scores")
+      .select("name, score, created_at")
+      .eq("game_id", tab)
+      .order("score", { ascending: false })
+      .limit(12)
+      .then(({ data }) => {
+        const list = (data ?? []).map((r, i) => ({
+          rank: i + 1,
+          name: r.name,
+          score: r.score,
+          date: new Date(r.created_at).toLocaleDateString("es-ES"),
+        }));
+        setRows(list);
+      });
+  }, [supabase, tab]);
+
+  const game = games.find((g) => g.id === tab);
+  const you =
+    user && rows.find((r) => r.name.toUpperCase() === user.name.toUpperCase());
+
+  if (!game) return null;
 
   return (
     <div className="av-hall fade-in">
@@ -23,7 +60,7 @@ export default function HallOfFame() {
       </div>
 
       <div className="hall-tabs">
-        {VISIBLE_GAMES.map((g) => (
+        {games.map((g) => (
           <button
             key={g.id}
             className={"chip" + (tab === g.id ? " active" : "")}
@@ -37,9 +74,11 @@ export default function HallOfFame() {
       <div className="podium">
         <div className="podium-slot silver">
           <div className="rank-num">02</div>
-          <div className="name">{rows[1].name}</div>
-          <div className="score">{rows[1].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[1].date}</div>
+          <div className="name">{rows[1]?.name ?? "—"}</div>
+          <div className="score">
+            {rows[1] ? rows[1].score.toLocaleString("es-ES") : "—"}
+          </div>
+          <div className="date">{rows[1]?.date ?? ""}</div>
         </div>
         <div className="podium-slot gold">
           <div
@@ -55,17 +94,19 @@ export default function HallOfFame() {
           <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
             01
           </div>
-          <div className="name">{rows[0].name}</div>
+          <div className="name">{rows[0]?.name ?? "—"}</div>
           <div className="score" style={{ fontSize: 20 }}>
-            {rows[0].score.toLocaleString("es-ES")}
+            {rows[0] ? rows[0].score.toLocaleString("es-ES") : "—"}
           </div>
-          <div className="date">{rows[0].date}</div>
+          <div className="date">{rows[0]?.date ?? ""}</div>
         </div>
         <div className="podium-slot bronze">
           <div className="rank-num">03</div>
-          <div className="name">{rows[2].name}</div>
-          <div className="score">{rows[2].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[2].date}</div>
+          <div className="name">{rows[2]?.name ?? "—"}</div>
+          <div className="score">
+            {rows[2] ? rows[2].score.toLocaleString("es-ES") : "—"}
+          </div>
+          <div className="date">{rows[2]?.date ?? ""}</div>
         </div>
       </div>
 
@@ -76,6 +117,17 @@ export default function HallOfFame() {
           <div>PUNTUACIÓN</div>
           <div>FECHA</div>
         </div>
+        {rows.length === 0 && (
+          <div
+            style={{
+              padding: "24px 0",
+              textAlign: "center",
+              color: "var(--ink-faint)",
+            }}
+          >
+            SIN PUNTUACIONES AÚN — SÉ EL PRIMERO
+          </div>
+        )}
         {rows.map((r, i) => (
           <div
             key={r.name + i}
@@ -91,7 +143,7 @@ export default function HallOfFame() {
             <div className="dt">{r.date}</div>
           </div>
         ))}
-        {user && (
+        {you && (
           <>
             <div className="tr you-label">▸ TU MEJOR MARCA EN {game.title}</div>
             <div
@@ -99,10 +151,10 @@ export default function HallOfFame() {
               style={{ animationDelay: `${rows.length * 50 + 50}ms` }}
             >
               <div className="rk" style={{ color: "var(--yellow)" }}>
-                #{String(youRank).padStart(2, "0")}
+                #{String(you.rank).padStart(2, "0")}
               </div>
               <div className="pl" style={{ color: "var(--yellow)" }}>
-                {user.name}
+                {you.name}
               </div>
               <div
                 className="sc"
@@ -111,9 +163,9 @@ export default function HallOfFame() {
                   textShadow: "0 0 6px rgba(245,255,0,0.5)",
                 }}
               >
-                {(youScore || 9999).toLocaleString("es-ES")}
+                {you.score.toLocaleString("es-ES")}
               </div>
-              <div className="dt">11/05/2026</div>
+              <div className="dt">{you.date}</div>
             </div>
           </>
         )}

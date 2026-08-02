@@ -1,15 +1,31 @@
+import { createClient } from "@/lib/supabase/client";
+
 export interface ScoreEntry {
   game: string;
   score: number;
   name: string;
-  at: number;
 }
 
-export function saveScore(entry: Omit<ScoreEntry, "at">) {
+export async function saveScore(entry: ScoreEntry) {
+  const supabase = createClient();
+  await supabase
+    .from("scores")
+    .insert({ game_id: entry.game, score: entry.score, name: entry.name });
+}
+
+const PLAYER_NAME_KEY = "av_player_name";
+
+export function getSavedPlayerName(): string | null {
   try {
-    const all: ScoreEntry[] = JSON.parse(localStorage.getItem("av_scores") || "[]");
-    all.push({ ...entry, at: Date.now() });
-    localStorage.setItem("av_scores", JSON.stringify(all));
+    return localStorage.getItem(PLAYER_NAME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setSavedPlayerName(name: string) {
+  try {
+    localStorage.setItem(PLAYER_NAME_KEY, name);
   } catch {
     // localStorage unavailable — ignore
   }
