@@ -23,11 +23,15 @@ export default function GamePlayerClient({ game }: { game: Game }) {
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState(
-    () => getSavedPlayerName() ?? user?.name ?? "INVITADO",
-  );
+  const [name, setName] = useState("INVITADO");
   const [saved, setSaved] = useState(false);
   const [asteroidsRunKey, setAsteroidsRunKey] = useState(0);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrates from localStorage after mount to avoid SSR mismatch
+    setName(getSavedPlayerName() ?? user?.name ?? "INVITADO");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isAsteroids || over || paused) return;
@@ -40,6 +44,7 @@ export default function GamePlayerClient({ game }: { game: Game }) {
 
   useEffect(() => {
     if (isAsteroids) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- derives level from score tick, no external system involved
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
   }, [isAsteroids, score]);
 

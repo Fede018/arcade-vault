@@ -19,6 +19,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrates from localStorage after mount to avoid SSR mismatch
       setUser(JSON.parse(localStorage.getItem("av_user") || "null"));
     } catch {
       setUser(null);
@@ -36,7 +37,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("av_user");
   };
 
-  return <UserContext.Provider value={{ user, login, signOut }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, login, signOut }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export function useUser() {
