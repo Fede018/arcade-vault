@@ -1,44 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, notFound } from "next/navigation";
 import { GAMES } from "@/lib/data";
 import { saveScore } from "@/lib/scores";
 import { useUser } from "@/app/providers";
+import AsteroidsGame, {
+  type AsteroidsState,
+} from "@/components/games/asteroids-game";
 
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useUser();
   const game = GAMES.find((g) => g.id === id);
+  const isAsteroids = game?.id === "asteroids";
 
   const [score, setScore] = useState(0);
-  const [lives] = useState(3);
+  const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user ? user.name : "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [asteroidsRunKey, setAsteroidsRunKey] = useState(0);
 
   useEffect(() => {
-    if (over || paused) return;
-    const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
+    if (isAsteroids || over || paused) return;
+    const t = setInterval(
+      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      220,
+    );
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [isAsteroids, over, paused]);
 
   useEffect(() => {
+    if (isAsteroids) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [score]);
+  }, [isAsteroids, score]);
 
   if (!game) notFound();
 
-  const endGame = () => setOver(true);
+  const endGame = useCallback((finalScore?: number) => {
+    if (finalScore !== undefined) setScore(finalScore);
+    setOver(true);
+  }, []);
+
+  const handleAsteroidsStateChange = useCallback((state: AsteroidsState) => {
+    setScore(state.score);
+    setLives(state.lives);
+    setLevel(state.level);
+  }, []);
   const restart = () => {
     setScore(0);
+    setLives(3);
     setLevel(1);
     setPaused(false);
     setOver(false);
     setSaved(false);
+    if (isAsteroids) setAsteroidsRunKey((k) => k + 1);
   };
 
   return (
@@ -68,10 +88,13 @@ export default function GamePlayer() {
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          <button className="btn magenta" onClick={endGame}>
+          <button className="btn magenta" onClick={() => endGame()}>
             FIN
           </button>
-          <button className="btn ghost" onClick={() => router.push(`/juego/${game.id}`)}>
+          <button
+            className="btn ghost"
+            onClick={() => router.push(`/juego/${game.id}`)}
+          >
             SALIR
           </button>
         </div>
@@ -80,19 +103,41 @@ export default function GamePlayer() {
       <div className="crt">
         <div className="crt-screen">
           <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
+            {isAsteroids ? (
+              <AsteroidsGame
+                key={asteroidsRunKey}
+                paused={paused || over}
+                onStateChange={handleAsteroidsStateChange}
+                onGameOver={(finalScore) => endGame(finalScore)}
+              />
+            ) : (
+              <>
+                <div className="grid-floor"></div>
+                <div className="enemy e1"></div>
+                <div className="enemy e2"></div>
+                <div className="enemy e3"></div>
+                <div className="player-ship"></div>
+              </>
+            )}
           </div>
           {paused && (
-            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+            <div
+              className="crt-content"
+              style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}
+            >
               <div>
                 <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
                   EN PAUSA
                 </div>
-                <div className="mono" style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}>
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: 11,
+                    color: "var(--ink-dim)",
+                    marginTop: 10,
+                    letterSpacing: "0.16em",
+                  }}
+                >
                   PULSA REANUDAR PARA CONTINUAR
                 </div>
               </div>
@@ -101,9 +146,7 @@ export default function GamePlayer() {
         </div>
         <div className="crt-bottom">
           <span className="led">SEÑAL OK</span>
-          <span>
-            {game.title} · CRT-83 · 60 HZ
-          </span>
+          <span>{game.title} · CRT-83 · 60 HZ</span>
           <span>CARGA · 1MB</span>
         </div>
       </div>
@@ -118,7 +161,9 @@ export default function GamePlayer() {
               <div className="input-row">
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                  onChange={(e) =>
+                    setName(e.target.value.toUpperCase().slice(0, 10))
+                  }
                   placeholder="TUS INICIALES"
                 />
                 <button
@@ -138,7 +183,10 @@ export default function GamePlayer() {
               <button className="btn" onClick={restart}>
                 JUGAR DE NUEVO
               </button>
-              <button className="btn magenta" onClick={() => router.push("/games")}>
+              <button
+                className="btn magenta"
+                onClick={() => router.push("/games")}
+              >
                 VOLVER AL VAULT
               </button>
             </div>
