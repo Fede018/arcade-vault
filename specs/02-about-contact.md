@@ -1,6 +1,6 @@
 # SPEC 02 — About page & contact form
 
-> **Estado:** aprobado
+> **Estado:** Implementado
 > **Depende de:** [01-home-landing](01-home-landing.md)
 > **Fecha:** 2026-07-30
 > **Objetivo:** Implementar la página "Acerca de" con formulario de contacto (según `references/templates/home-about/about.jsx`) que envía correos vía Resend a `fedef0188@gmail.com`.
