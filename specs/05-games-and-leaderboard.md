@@ -1,6 +1,6 @@
 # SPEC 05 — Tablas de juegos y puntuaciones en Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** [03-supabase-integration](03-supabase-integration.md)
 > **Fecha:** 2026-08-02
 > **Objetivo:** Crear las tablas `games` y `scores` en Supabase (con RLS), migrar el catálogo de juegos y el guardado de puntuaciones a datos reales, y reemplazar los leaderboards fake (salón de la fama y detalle de juego) por consultas reales a la base de datos.
@@ -135,20 +135,20 @@ export interface ScoreRow {
 
 ## Acceptance criteria
 
-- [ ] Tablas `games` y `scores` existen en Supabase con RLS habilitado (`get_advisors` sin warnings de seguridad críticos).
-- [ ] `games` contiene los 12 juegos actuales (incluye `rocas` y `asteroids`) tras la migración.
-- [ ] `scores` está vacía tras la migración (sin datos fake).
-- [ ] Vista `games_with_stats` devuelve `best`/`plays` correctos (0 si el juego no tiene partidas guardadas).
-- [ ] `/games` lista los 12 juegos (incluye `rocas` visible de nuevo), filtro por categoría y búsqueda por texto siguen funcionando igual que antes.
-- [ ] Home (`/`) muestra el preview de 6 juegos desde Supabase; el resto de la página (actividad, precios, etc.) no cambia.
-- [ ] `/juego/[id]` muestra detalle del juego real y leaderboard real (top scores de `scores` para ese juego); si no hay scores, muestra el mensaje de estado vacío.
-- [ ] `/juego/[id]/jugar` sigue funcionando igual que antes (HUD, pausa, fin de partida) pero con los datos del juego traídos de Supabase.
-- [ ] Guardar puntuación en el modal hace un `INSERT` real en `scores` (verificable con `execute_sql` o recargando `/juego/[id]`), ya no escribe en `av_scores` de `localStorage`.
-- [ ] El nombre tipeado en el modal de fin de partida se recuerda en `localStorage` (`av_player_name`) y precarga el input en la siguiente partida.
-- [ ] `/salon` reemplaza `seededScores` por scores reales; cambiar de tab consulta el juego correspondiente; estado vacío si un juego no tiene partidas.
-- [ ] Card de juego (`GameCard`) muestra `best` real (0 si no hay partidas) en vez del valor fijo anterior.
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
-- [ ] Ninguna key de Supabase queda expuesta más allá de lo ya documentado en spec 03.
+- [x] Tablas `games` y `scores` existen en Supabase con RLS habilitado (`get_advisors` sin warnings de seguridad críticos).
+- [x] `games` contiene los 12 juegos actuales (incluye `rocas` y `asteroids`) tras la migración.
+- [x] `scores` está vacía tras la migración (sin datos fake).
+- [x] Vista `games_with_stats` devuelve `best`/`plays` correctos (0 si el juego no tiene partidas guardadas).
+- [x] `/games` lista los 12 juegos (incluye `rocas` visible de nuevo), filtro por categoría y búsqueda por texto siguen funcionando igual que antes.
+- [x] Home (`/`) muestra el preview de 6 juegos desde Supabase; el resto de la página (actividad, precios, etc.) no cambia.
+- [x] `/juego/[id]` muestra detalle del juego real y leaderboard real (top scores de `scores` para ese juego); si no hay scores, muestra el mensaje de estado vacío.
+- [x] `/juego/[id]/jugar` sigue funcionando igual que antes (HUD, pausa, fin de partida) pero con los datos del juego traídos de Supabase.
+- [x] Guardar puntuación en el modal hace un `INSERT` real en `scores` (verificable con `execute_sql` o recargando `/juego/[id]`), ya no escribe en `av_scores` de `localStorage`.
+- [x] El nombre tipeado en el modal de fin de partida se recuerda en `localStorage` (`av_player_name`) y precarga el input en la siguiente partida.
+- [x] `/salon` reemplaza `seededScores` por scores reales; cambiar de tab consulta el juego correspondiente; estado vacío si un juego no tiene partidas.
+- [x] Card de juego (`GameCard`) muestra `best` real (0 si no hay partidas) en vez del valor fijo anterior.
+- [x] `npm run build` y `npm run lint` pasan sin errores.
+- [x] Ninguna key de Supabase queda expuesta más allá de lo ya documentado en spec 03.
 
 ## Decisions
 
