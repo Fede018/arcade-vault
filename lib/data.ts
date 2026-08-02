@@ -114,6 +114,8 @@ export const GAMES: Game[] = [
   },
 ];
 
+export const VISIBLE_GAMES: Game[] = GAMES.filter((g) => g.id !== "rocas");
+
 export const CATS: (GameCategory | "TODOS")[] = [
   "TODOS",
   "ARCADE",

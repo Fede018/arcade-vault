@@ -1,6 +1,6 @@
 # SPEC 04 — Juego Asteroids jugable
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** 03-supabase-integration
 > **Fecha:** 2026-08-02
 > **Objetivo:** Integrar el juego Asteroids de `references/started-games/02-asteroids` como juego real jugable ("ASTEROIDS") en `/juego/asteroids/jugar`, reemplazando el mock de partida por el motor real en canvas, sincronizado con el HUD y el guardado de puntuación existentes.
@@ -78,28 +78,35 @@ type AsteroidsGameProps = {
    - El `useEffect` del `setInterval` falso (incremento aleatorio de score) y el `useEffect` de subir nivel por score (`score % 2500`) se condicionan a `game.id !== "asteroids"` — para `asteroids` esos valores vienen de `onStateChange`.
    - Botón FIN (`endGame`): para `asteroids`, además de `setOver(true)`, debe detener el loop del juego (vía prop `paused` forzado a `true` al abrir el modal, o un prop adicional `stopped`).
 4. Verificar manualmente: abrir `/juego/asteroids/jugar`, jugar con teclado (rotar, empujar, disparar), confirmar HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja el estado real del juego en vivo, botón PAUSA congela el juego y REANUDAR lo retoma sin saltos, perder las 3 vidas abre el modal con el score final correcto, guardar con iniciales persiste en `localStorage` (`av_scores`) con `game: "asteroids"`, botón "JUGAR DE NUEVO" reinicia una partida nueva desde cero, botón SALIR/VOLVER AL VAULT no deja el loop corriendo en segundo plano (sin errores de canvas tras desmontar). Confirmar que los demás juegos (mock) siguen funcionando igual que antes.
-5. Cerrar con `npm run build` y `npm run lint`.
+5. `lib/data.ts`: agregar `export const VISIBLE_GAMES = GAMES.filter((g) => g.id !== "rocas");` (no se borra `rocas` de `GAMES`, solo se deriva una lista sin ella para las vistas públicas de navegación). Usar `VISIBLE_GAMES` en vez de `GAMES` en:
+   - `app/games/page.tsx` (listado filtrable).
+   - `app/page.tsx` (preview de 6 juegos en home).
+   - `app/salon/page.tsx` (pestañas de juego en el salón de la fama).
+     Las rutas `/juego/rocas` y `/juego/rocas/jugar` no se tocan y siguen accesibles por URL directa (ambas siguen usando `GAMES.find`, no `VISIBLE_GAMES`).
+6. Cerrar con `npm run build` y `npm run lint`.
 
 ## Acceptance criteria
 
-- [ ] `GAMES` en `lib/data.ts` incluye la entrada `asteroids` (id/title/cat/cover/etc.); `rocas` sigue existiendo sin cambios.
-- [ ] `/games` muestra la card "ASTEROIDS" junto a las demás, filtrable por categoría SHOOTER y por búsqueda de texto.
-- [ ] `/juego/asteroids` muestra detalle del juego y leaderboard fake (`seededScores`), sin errores de consola.
-- [ ] `/juego/asteroids/jugar` renderiza el canvas del juego real (nave, asteroides, controles) dentro de `crt-screen`, escalado sin desbordar el layout.
-- [ ] Teclado (`←` `→` `↑` `Espacio`) controla la nave; no hace scroll de la página al presionar esas teclas.
-- [ ] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja en tiempo real el score, vidas y nivel del juego real (no valores mock).
-- [ ] Botón PAUSA congela el juego (nave/asteroides/balas quedan quietos); REANUDAR continúa sin salto brusco de posición.
-- [ ] Perder las 3 vidas dispara automáticamente el modal de fin de partida con el score final correcto.
-- [ ] Botón FIN también dispara el modal de fin de partida con el score actual y detiene el juego.
-- [ ] Guardar puntuación en el modal persiste en `localStorage` bajo `av_scores` con `game: "asteroids"`, score y nombre correctos.
-- [ ] Botón "JUGAR DE NUEVO" reinicia una partida nueva (score/vidas/nivel en cero, asteroides reposicionados).
-- [ ] Navegar a "VOLVER AL VAULT" o "SALIR" detiene el loop del juego (no quedan `requestAnimationFrame` corriendo tras desmontar el componente).
-- [ ] Los demás juegos del listado (`bloque-buster`, `caida`, `serpentina`, `gloton`, `invasores`, `ranaria`, `duelo-pixel`, `rocas`) siguen mostrando el comportamiento mock actual sin cambios.
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
+- [x] `GAMES` en `lib/data.ts` incluye la entrada `asteroids` (id/title/cat/cover/etc.); `rocas` sigue existiendo en los datos sin cambios.
+- [x] `/games` muestra la card "ASTEROIDS" junto a las demás, filtrable por categoría SHOOTER y por búsqueda de texto.
+- [x] `/games`, el preview de home y las pestañas del salón de la fama **no** muestran "ROCAS" (oculto vía `VISIBLE_GAMES`); `/juego/rocas` y `/juego/rocas/jugar` siguen funcionando si se navega por URL directa (no se borró la ruta ni los datos de `GAMES`).
+- [x] `/juego/asteroids` muestra detalle del juego y leaderboard fake (`seededScores`), sin errores de consola.
+- [x] `/juego/asteroids/jugar` renderiza el canvas del juego real (nave, asteroides, controles) dentro de `crt-screen`, escalado sin desbordar el layout.
+- [x] Teclado (`←` `→` `↑` `Espacio`) controla la nave; no hace scroll de la página al presionar esas teclas.
+- [x] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja en tiempo real el score, vidas y nivel del juego real (no valores mock).
+- [x] Botón PAUSA congela el juego (nave/asteroides/balas quedan quietos); REANUDAR continúa sin salto brusco de posición.
+- [x] Perder las 3 vidas dispara automáticamente el modal de fin de partida con el score final correcto.
+- [x] Botón FIN también dispara el modal de fin de partida con el score actual y detiene el juego.
+- [x] Guardar puntuación en el modal persiste en `localStorage` bajo `av_scores` con `game: "asteroids"`, score y nombre correctos.
+- [x] Botón "JUGAR DE NUEVO" reinicia una partida nueva (score/vidas/nivel en cero, asteroides reposicionados).
+- [x] Navegar a "VOLVER AL VAULT" o "SALIR" detiene el loop del juego (no quedan `requestAnimationFrame` corriendo tras desmontar el componente).
+- [x] Los demás juegos del listado (`bloque-buster`, `caida`, `serpentina`, `gloton`, `invasores`, `ranaria`, `duelo-pixel`) siguen mostrando el comportamiento mock actual sin cambios; `rocas` mantiene su mock intacto pero ya no aparece en el listado (ver decisión de 2026-08-02).
+- [x] `npm run build` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
-- **Sí:** Nueva entrada `asteroids` en `GAMES`, dejando `rocas` intacto. Decisión explícita del usuario — son juegos distintos, no un reemplazo.
+- **Sí:** Nueva entrada `asteroids` en `GAMES`, dejando `rocas` intacto en los datos. Decisión explícita del usuario — son juegos distintos, no un reemplazo.
+- **Sí (actualizado 2026-08-02):** `rocas` se oculta del listado `/games` (no aparece como card), pero **no se elimina** de `GAMES` ni se borra su ruta `/juego/rocas` — sigue siendo accesible por URL directa. Decisión explícita del usuario tras ver ambos juegos duplicados en el listado: "roca no va, pero tampoco había que reemplazarlo o eliminarlo... solo deja ASTEROIDS". El filtro de visibilidad va en `app/games/page.tsx` (excluir `id === "rocas"` del array que se renderiza), no en `lib/data.ts`.
 - **Sí:** `id`/`title` en inglés (`asteroids` / `ASTEROIDS`), aunque el resto del catálogo está en español. Decisión explícita del usuario.
 - **Sí:** Reutilizar `lib/data.ts` (no crear `app/data/games.ts`). Evita romper imports existentes (`games/page.tsx`, `game-card.tsx`, `juego/[id]/page.tsx`, `juego/[id]/jugar/page.tsx`) sin beneficio claro.
 - **Sí:** Reutilizar la clase CSS `cover-rocas` para la card de `asteroids` en vez de crear una nueva. Mismo estilo temático (asteroides), evita duplicar CSS.

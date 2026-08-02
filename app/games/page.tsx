@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CATS, GAMES } from "@/lib/data";
+import { CATS, VISIBLE_GAMES } from "@/lib/data";
 import GameCard from "@/components/game-card";
 
 export default function Library() {
@@ -9,8 +9,10 @@ export default function Library() {
   const [cat, setCat] = useState<(typeof CATS)[number]>("TODOS");
 
   const filtered = useMemo(() => {
-    return GAMES.filter(
-      (g) => (cat === "TODOS" || g.cat === cat) && g.title.toLowerCase().includes(q.toLowerCase())
+    return VISIBLE_GAMES.filter(
+      (g) =>
+        (cat === "TODOS" || g.cat === cat) &&
+        g.title.toLowerCase().includes(q.toLowerCase()),
     );
   }, [q, cat]);
 
@@ -26,11 +28,19 @@ export default function Library() {
       <div className="av-filters">
         <div className="av-search">
           <span className="ico">⌕</span>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar un juego por nombre…" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar un juego por nombre…"
+          />
         </div>
         <div className="av-chips">
           {CATS.map((c) => (
-            <button key={c} className={"chip" + (cat === c ? " active" : "")} onClick={() => setCat(c)}>
+            <button
+              key={c}
+              className={"chip" + (cat === c ? " active" : "")}
+              onClick={() => setCat(c)}
+            >
               {c}
             </button>
           ))}
@@ -42,8 +52,22 @@ export default function Library() {
           <GameCard key={g.id} game={g} />
         ))}
         {filtered.length === 0 && (
-          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: 80, color: "var(--ink-faint)" }}>
-            <div className="pixel" style={{ fontSize: 14, color: "var(--magenta)", marginBottom: 12 }}>
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              padding: 80,
+              color: "var(--ink-faint)",
+            }}
+          >
+            <div
+              className="pixel"
+              style={{
+                fontSize: 14,
+                color: "var(--magenta)",
+                marginBottom: 12,
+              }}
+            >
               NO HAY RESULTADOS
             </div>
             <div>Intenta otra búsqueda o categoría.</div>
