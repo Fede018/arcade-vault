@@ -1,6 +1,6 @@
 # SPEC 01 — Home page (landing)
 
-> **Status:** aprobado
+> **Status:** Implementado
 > **Depends on:** —
 > **Date:** 2026-07-30
 > **Objective:** Reemplazar la Biblioteca actual como página raíz por un Home de landing basado en `references/templates/home-about/home.jsx`, moviendo la Biblioteca a `/games`.
