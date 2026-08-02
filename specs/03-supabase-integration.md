@@ -1,6 +1,6 @@
 # SPEC 03 — Integración de Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** [02-about-contact](02-about-contact.md)
 > **Fecha:** 2026-08-02
 > **Objetivo:** Conectar la app Next.js con el proyecto Supabase mediante `@supabase/ssr`, dejando clientes de navegador y servidor, refresco de sesión y un endpoint de diagnóstico funcionando.
@@ -53,15 +53,15 @@ type HealthResponse =
 
 ## Acceptance criteria
 
-- [ ] `@supabase/supabase-js` y `@supabase/ssr` figuran en `package.json` e instalan sin errores.
-- [ ] Existen `lib/supabase/client.ts`, `lib/supabase/server.ts` y `lib/supabase/proxy.ts`.
-- [ ] Existe `proxy.ts` en la raíz (no `middleware.ts`, deprecado en Next 16).
-- [ ] `GET /api/health/supabase` responde `{ ok: true, user: null }` con status 200 en una sesión anónima.
-- [ ] Si la key es inválida o falta, el endpoint responde `{ ok: false, error }` con status 500 y la app no se cae.
-- [ ] Navegar `/`, `/games`, `/salon`, `/about` y `/auth` sigue funcionando igual que antes, sin redirecciones ni errores de consola.
-- [ ] `app/auth/page.tsx` y `app/providers.tsx` no fueron modificados.
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
-- [ ] Ninguna key ni URL de Supabase queda versionada en git salvo los nombres de variable en `.env.template`.
+- [x] `@supabase/supabase-js` y `@supabase/ssr` figuran en `package.json` e instalan sin errores.
+- [x] Existen `lib/supabase/client.ts`, `lib/supabase/server.ts` y `lib/supabase/proxy.ts`.
+- [x] Existe `proxy.ts` en la raíz (no `middleware.ts`, deprecado en Next 16).
+- [x] `GET /api/health/supabase` responde `{ ok: true, user: null }` con status 200 en una sesión anónima.
+- [x] Si la key es inválida o falta, el endpoint responde `{ ok: false, error }` con status 500 y la app no se cae.
+- [x] Navegar `/`, `/games`, `/salon`, `/about` y `/auth` sigue funcionando igual que antes, sin redirecciones ni errores de consola.
+- [x] `app/auth/page.tsx` y `app/providers.tsx` no fueron modificados.
+- [x] `npm run build` y `npm run lint` pasan sin errores.
+- [x] Ninguna key ni URL de Supabase queda versionada en git salvo los nombres de variable en `.env.template`.
 
 ## Decisions
 
