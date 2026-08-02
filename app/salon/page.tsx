@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { GAMES, seededScores } from "@/lib/data";
+import { VISIBLE_GAMES, seededScores } from "@/lib/data";
 import { useUser } from "@/app/providers";
 
 export default function HallOfFame() {
   const { user } = useUser();
-  const [tab, setTab] = useState(GAMES[0].id);
+  const [tab, setTab] = useState(VISIBLE_GAMES[0].id);
   const rows = useMemo(() => seededScores(tab.length * 23 + 7, 12), [tab]);
-  const game = GAMES.find((g) => g.id === tab)!;
+  const game = VISIBLE_GAMES.find((g) => g.id === tab)!;
   const youRank = user ? Math.floor(8 + (tab.length % 4)) : null;
   const youScore = user ? rows[5]?.score - 2400 : null;
 
@@ -23,8 +23,12 @@ export default function HallOfFame() {
       </div>
 
       <div className="hall-tabs">
-        {GAMES.map((g) => (
-          <button key={g.id} className={"chip" + (tab === g.id ? " active" : "")} onClick={() => setTab(g.id)}>
+        {VISIBLE_GAMES.map((g) => (
+          <button
+            key={g.id}
+            className={"chip" + (tab === g.id ? " active" : "")}
+            onClick={() => setTab(g.id)}
+          >
             {g.title}
           </button>
         ))}
@@ -38,7 +42,14 @@ export default function HallOfFame() {
           <div className="date">{rows[1].date}</div>
         </div>
         <div className="podium-slot gold">
-          <div className="pixel" style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}>
+          <div
+            className="pixel"
+            style={{
+              fontSize: 9,
+              color: "var(--gold)",
+              letterSpacing: "0.18em",
+            }}
+          >
             CAMPEÓN
           </div>
           <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
@@ -68,7 +79,10 @@ export default function HallOfFame() {
         {rows.map((r, i) => (
           <div
             key={r.name + i}
-            className={"tr" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")}
+            className={
+              "tr" +
+              (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
+            }
             style={{ animationDelay: `${i * 50}ms` }}
           >
             <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
@@ -80,14 +94,23 @@ export default function HallOfFame() {
         {user && (
           <>
             <div className="tr you-label">▸ TU MEJOR MARCA EN {game.title}</div>
-            <div className="tr you" style={{ animationDelay: `${rows.length * 50 + 50}ms` }}>
+            <div
+              className="tr you"
+              style={{ animationDelay: `${rows.length * 50 + 50}ms` }}
+            >
               <div className="rk" style={{ color: "var(--yellow)" }}>
                 #{String(youRank).padStart(2, "0")}
               </div>
               <div className="pl" style={{ color: "var(--yellow)" }}>
                 {user.name}
               </div>
-              <div className="sc" style={{ color: "var(--yellow)", textShadow: "0 0 6px rgba(245,255,0,0.5)" }}>
+              <div
+                className="sc"
+                style={{
+                  color: "var(--yellow)",
+                  textShadow: "0 0 6px rgba(245,255,0,0.5)",
+                }}
+              >
                 {(youScore || 9999).toLocaleString("es-ES")}
               </div>
               <div className="dt">11/05/2026</div>
