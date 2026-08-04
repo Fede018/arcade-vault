@@ -9,14 +9,13 @@ import {
   setSavedPlayerName,
 } from "@/lib/scores";
 import { useUser } from "@/app/providers";
-import AsteroidsGame, {
-  type AsteroidsState,
-} from "@/components/games/asteroids-game";
+import { GAME_ENGINES } from "@/components/games/registry";
+import type { GameEngineState } from "@/components/games/engine-types";
 
 export default function GamePlayerClient({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useUser();
-  const isAsteroids = game.id === "asteroids";
+  const Engine = GAME_ENGINES[game.id];
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -25,7 +24,7 @@ export default function GamePlayerClient({ game }: { game: Game }) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState("INVITADO");
   const [saved, setSaved] = useState(false);
-  const [asteroidsRunKey, setAsteroidsRunKey] = useState(0);
+  const [runKey, setRunKey] = useState(0);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrates from localStorage after mount to avoid SSR mismatch
@@ -34,26 +33,26 @@ export default function GamePlayerClient({ game }: { game: Game }) {
   }, []);
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (Engine || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [Engine, over, paused]);
 
   useEffect(() => {
-    if (isAsteroids) return;
+    if (Engine) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- derives level from score tick, no external system involved
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroids, score]);
+  }, [Engine, score]);
 
   const endGame = useCallback((finalScore?: number) => {
     if (finalScore !== undefined) setScore(finalScore);
     setOver(true);
   }, []);
 
-  const handleAsteroidsStateChange = useCallback((state: AsteroidsState) => {
+  const handleEngineStateChange = useCallback((state: GameEngineState) => {
     setScore(state.score);
     setLives(state.lives);
     setLevel(state.level);
@@ -65,7 +64,7 @@ export default function GamePlayerClient({ game }: { game: Game }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
-    if (isAsteroids) setAsteroidsRunKey((k) => k + 1);
+    if (Engine) setRunKey((k) => k + 1);
   };
 
   return (
@@ -110,11 +109,11 @@ export default function GamePlayerClient({ game }: { game: Game }) {
       <div className="crt">
         <div className="crt-screen">
           <div className="game-arena">
-            {isAsteroids ? (
-              <AsteroidsGame
-                key={asteroidsRunKey}
+            {Engine ? (
+              <Engine
+                key={runKey}
                 paused={paused || over}
-                onStateChange={handleAsteroidsStateChange}
+                onStateChange={handleEngineStateChange}
                 onGameOver={(finalScore) => endGame(finalScore)}
               />
             ) : (
