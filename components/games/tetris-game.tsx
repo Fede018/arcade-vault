@@ -192,8 +192,8 @@ export default function TetrisGame({
     let lastTime: number | null = null;
     let rafId = 0;
 
-    let prevScore = 0;
-    let prevLevel = 1;
+    let prevScore = -1;
+    let prevLevel = -1;
 
     function emitStateIfChanged() {
       if (score !== prevScore || level !== prevLevel) {
