@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { GameEngineState, GameEngineProps } from "./engine-types";
 
 const W = 800;
 const H = 600;
@@ -305,17 +306,8 @@ class Particle {
   }
 }
 
-export type AsteroidsState = {
-  score: number;
-  lives: number;
-  level: number;
-};
-
-export type AsteroidsGameProps = {
-  paused: boolean;
-  onStateChange: (state: AsteroidsState) => void;
-  onGameOver: (finalScore: number) => void;
-};
+export type AsteroidsState = GameEngineState;
+export type AsteroidsGameProps = GameEngineProps;
 
 const CAPTURED_CODES = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "Space"]);
 
