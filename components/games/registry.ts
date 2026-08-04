@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import AsteroidsGame from "./asteroids-game";
+import TetrisGame from "./tetris-game";
 import type { GameEngineProps } from "./engine-types";
 
 /**
@@ -8,4 +9,5 @@ import type { GameEngineProps } from "./engine-types";
  */
 export const GAME_ENGINES: Record<string, ComponentType<GameEngineProps>> = {
   asteroids: AsteroidsGame,
+  tetris: TetrisGame,
 };
