@@ -1,6 +1,6 @@
 # SPEC 08 — Snake
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** 05-games-and-leaderboard
 > **Fecha:** 2026-08-04
 > **Objetivo:** Agregar Snake al catálogo — motor construido de cero (sin código de referencia), sprites de frutas propios, jugable en `/juego/snake/jugar` con leaderboard funcional.
@@ -72,23 +72,23 @@ Tipos: reusa `GameEngineState` / `GameEngineProps` de `components/games/engine-t
 
 ## Acceptance criteria
 
-- [ ] Fila `snake` existe en `games` con `cat: ARCADE`, `color: magenta`, `cover: cover-snake`.
-- [ ] `/games` muestra la card del juego, filtrable por categoría ARCADE y por búsqueda de texto.
-- [ ] `/juego/snake` muestra detalle real y leaderboard vacío antes de la primera partida.
-- [ ] `/juego/snake/jugar` renderiza el motor real dentro de `.crt-screen`, canvas 800×800 escalado/letterboxeado sin desbordar el layout.
-- [ ] Atlas de frutas (`fruits.png`/`sprites.js`) carga antes de arrancar el loop; desmontar durante la carga no rompe nada.
-- [ ] Controles de teclado (flechas + WASD) mueven la serpiente y no scrollean la página (`preventDefault`).
-- [ ] Comer fruta: crece la serpiente, suma 10 puntos, sube la velocidad de tick, dispara sonido.
-- [ ] Frutas mostradas son variedad random entre las 21 del atlas.
-- [ ] Chocar contra pared o contra el propio cuerpo dispara game over.
-- [ ] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja `onStateChange` en tiempo real; Vidas y Nivel se muestran fijos en 1.
-- [ ] PAUSA congela el motor; REANUDAR continúa sin salto ni pérdida de dirección.
-- [ ] Fin de partida (choque, o botón FIN) dispara el modal con el score final correcto.
-- [ ] Guardar puntuación hace INSERT real en `scores` (verificable recargando `/juego/snake` o con `execute_sql`).
-- [ ] `/salon`, tab del juego, muestra el score guardado.
-- [ ] Card de `/games` refleja `best`/`plays` reales tras la partida.
-- [ ] Salir/desmontar detiene el loop (`cancelAnimationFrame`, listeners y `Audio` sin colgar).
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
+- [x] Fila `snake` existe en `games` con `cat: ARCADE`, `color: magenta`, `cover: cover-snake`.
+- [x] `/games` muestra la card del juego, filtrable por categoría ARCADE y por búsqueda de texto.
+- [x] `/juego/snake` muestra detalle real y leaderboard vacío antes de la primera partida.
+- [x] `/juego/snake/jugar` renderiza el motor real dentro de `.crt-screen`, canvas 800×800 escalado/letterboxeado sin desbordar el layout.
+- [x] Atlas de frutas (`fruits.png`/`sprites.js`) carga antes de arrancar el loop; desmontar durante la carga no rompe nada.
+- [x] Controles de teclado (flechas + WASD) mueven la serpiente y no scrollean la página (`preventDefault`).
+- [x] Comer fruta: crece la serpiente, suma 10 puntos, sube la velocidad de tick, dispara sonido.
+- [x] Frutas mostradas son variedad random entre las 21 del atlas.
+- [x] Chocar contra pared o contra el propio cuerpo dispara game over.
+- [x] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja `onStateChange` en tiempo real; Vidas y Nivel se muestran fijos en 1.
+- [x] PAUSA congela el motor; REANUDAR continúa sin salto ni pérdida de dirección.
+- [x] Fin de partida (choque, o botón FIN) dispara el modal con el score final correcto.
+- [x] Guardar puntuación hace INSERT real en `scores` (verificable recargando `/juego/snake` o con `execute_sql`).
+- [x] `/salon`, tab del juego, muestra el score guardado.
+- [x] Card de `/games` refleja `best`/`plays` reales tras la partida.
+- [x] Salir/desmontar detiene el loop (`cancelAnimationFrame`, listeners y `Audio` sin colgar).
+- [x] `npm run build` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
