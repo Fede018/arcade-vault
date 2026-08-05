@@ -1,6 +1,6 @@
 # SPEC 07 — Arkanoid
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** 05-games-and-leaderboard
 > **Fecha:** 2026-08-04
 > **Objetivo:** Agregar Arkanoid al catálogo — motor porteado de `references/started-games/04-arkanoid`, jugable en `/juego/arkanoid/jugar` con leaderboard funcional.
@@ -70,24 +70,24 @@ Tipos: reusa `GameEngineState` / `GameEngineProps` de `components/games/engine-t
 
 ## Acceptance criteria
 
-- [ ] Fila `arkanoid` existe en `games` con `cat: ARCADE`, `color: yellow`, `cover: cover-bricks`.
-- [ ] `/games` muestra la card de Arkanoid, filtrable por categoría ARCADE y por búsqueda de texto.
-- [ ] `/juego/arkanoid` muestra detalle real y leaderboard vacío antes de la primera partida.
-- [ ] `/juego/arkanoid/jugar` renderiza el motor real dentro de `.crt-screen`, canvas 800×600 sin desbordar ni letterbox.
-- [ ] Solo `←`/`→` mueven la paleta; ninguna otra tecla del juego interfiere con la página (`preventDefault`).
-- [ ] Sprites (paddle, pelota, bloques, explosiones) se ven correctamente — assets cargan desde `public/games/arkanoid/`.
-- [ ] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja en tiempo real `onStateChange`; vidas inicia en 3, nivel en 1.
-- [ ] Bloques destruidos suman 10 pts y disparan animación de explosión.
-- [ ] Rebote de pelota y rotura de bloque reproducen sonido.
-- [ ] Completar todos los bloques de un nivel carga el siguiente (velocidad de pelota progresiva por nivel).
-- [ ] PAUSA congela el motor (paddle/pelota/bloques no se mueven); REANUDAR continúa sin salto.
-- [ ] Perder la 3ª vida dispara el modal de fin de partida con el score final correcto.
-- [ ] Completar el nivel 5 dispara el modal de fin de partida (mismo camino que game over).
-- [ ] Guardar puntuación hace INSERT real en `scores` (verificable recargando `/juego/arkanoid` o con `execute_sql`).
-- [ ] `/salon`, tab de Arkanoid, muestra el score guardado.
-- [ ] Card de `/games` refleja `best`/`plays` reales tras la partida.
-- [ ] Salir/desmontar detiene el loop (`cancelAnimationFrame`, sin listeners colgados).
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
+- [x] Fila `arkanoid` existe en `games` con `cat: ARCADE`, `color: yellow`, `cover: cover-bricks`.
+- [x] `/games` muestra la card de Arkanoid, filtrable por categoría ARCADE y por búsqueda de texto.
+- [x] `/juego/arkanoid` muestra detalle real y leaderboard vacío antes de la primera partida.
+- [x] `/juego/arkanoid/jugar` renderiza el motor real dentro de `.crt-screen`, canvas 800×600 sin desbordar ni letterbox.
+- [x] Solo `←`/`→` mueven la paleta; ninguna otra tecla del juego interfiere con la página (`preventDefault`).
+- [x] Sprites (paddle, pelota, bloques, explosiones) se ven correctamente — assets cargan desde `public/games/arkanoid/`.
+- [x] HUD superior (Jugador/Puntuación/Vidas/Nivel) refleja en tiempo real `onStateChange`; vidas inicia en 3, nivel en 1.
+- [x] Bloques destruidos suman 10 pts y disparan animación de explosión.
+- [x] Rebote de pelota y rotura de bloque reproducen sonido.
+- [x] Completar todos los bloques de un nivel carga el siguiente (velocidad de pelota progresiva por nivel).
+- [x] PAUSA congela el motor (paddle/pelota/bloques no se mueven); REANUDAR continúa sin salto.
+- [x] Perder la 3ª vida dispara el modal de fin de partida con el score final correcto.
+- [x] Completar el nivel 5 dispara el modal de fin de partida (mismo camino que game over).
+- [x] Guardar puntuación hace INSERT real en `scores` (verificable recargando `/juego/arkanoid` o con `execute_sql`).
+- [x] `/salon`, tab de Arkanoid, muestra el score guardado.
+- [x] Card de `/games` refleja `best`/`plays` reales tras la partida.
+- [x] Salir/desmontar detiene el loop (`cancelAnimationFrame`, sin listeners colgados).
+- [x] `npm run build` y `npm run lint` pasan sin errores.
 
 ## Decisions
 

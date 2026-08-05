@@ -103,6 +103,54 @@ const LEVELS: Level[] = (() => {
 
 type SpriteFrame = { sx: number; sy: number; sw: number; sh: number };
 
+// EXPLOSION_FRAMES vive como `const` de scope global en spritesheet.js: en un
+// <script> clásico eso no queda expuesto en `window`, así que se duplica acá
+// (misma tabla que el original) para poder consumirla desde React.
+const EXPLOSION_FRAMES: Record<string, SpriteFrame[]> = {
+  red: [
+    { sx: 256, sy: 176, sw: 32, sh: 16 },
+    { sx: 288, sy: 176, sw: 32, sh: 16 },
+    { sx: 320, sy: 176, sw: 32, sh: 16 },
+    { sx: 352, sy: 176, sw: 32, sh: 16 },
+  ],
+  cyan: [
+    { sx: 256, sy: 192, sw: 32, sh: 16 },
+    { sx: 288, sy: 192, sw: 32, sh: 16 },
+    { sx: 320, sy: 192, sw: 32, sh: 16 },
+    { sx: 352, sy: 192, sw: 32, sh: 16 },
+  ],
+  green: [
+    { sx: 256, sy: 208, sw: 32, sh: 16 },
+    { sx: 288, sy: 208, sw: 32, sh: 16 },
+    { sx: 320, sy: 208, sw: 32, sh: 16 },
+    { sx: 352, sy: 208, sw: 32, sh: 16 },
+  ],
+  magenta: [
+    { sx: 256, sy: 224, sw: 32, sh: 16 },
+    { sx: 288, sy: 224, sw: 32, sh: 16 },
+    { sx: 320, sy: 224, sw: 32, sh: 16 },
+    { sx: 352, sy: 224, sw: 32, sh: 16 },
+  ],
+  yellow: [
+    { sx: 256, sy: 240, sw: 32, sh: 16 },
+    { sx: 288, sy: 240, sw: 32, sh: 16 },
+    { sx: 320, sy: 240, sw: 32, sh: 16 },
+    { sx: 352, sy: 240, sw: 32, sh: 16 },
+  ],
+  hotpink: [
+    { sx: 256, sy: 256, sw: 32, sh: 16 },
+    { sx: 288, sy: 256, sw: 32, sh: 16 },
+    { sx: 320, sy: 256, sw: 32, sh: 16 },
+    { sx: 352, sy: 256, sw: 32, sh: 16 },
+  ],
+  gray: [
+    { sx: 256, sy: 176, sw: 32, sh: 16 },
+    { sx: 288, sy: 176, sw: 32, sh: 16 },
+    { sx: 320, sy: 176, sw: 32, sh: 16 },
+    { sx: 352, sy: 176, sw: 32, sh: 16 },
+  ],
+};
+
 type SpritesheetGlobals = {
   loadSpritesheet: (cb: () => void) => void;
   drawSprite: (
@@ -121,28 +169,32 @@ type SpritesheetGlobals = {
     w: number,
     h: number,
   ) => void;
-  EXPLOSION_FRAMES: Record<string, SpriteFrame[]>;
 };
+
+let spritesheetScriptPromise: Promise<void> | null = null;
+
+function ensureSpritesheetScript(): Promise<void> {
+  if (!spritesheetScriptPromise) {
+    spritesheetScriptPromise = new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "/games/arkanoid/spritesheet.js";
+      script.onload = () => resolve();
+      document.body.appendChild(script);
+    });
+  }
+  return spritesheetScriptPromise;
+}
 
 function loadArkanoidSpritesheet(
   onReady: () => void,
   isCancelled: () => boolean,
 ) {
-  const w = window as unknown as Partial<SpritesheetGlobals>;
-  const start = () => {
-    const w2 = window as unknown as Partial<SpritesheetGlobals>;
-    w2.loadSpritesheet?.(() => {
+  ensureSpritesheetScript().then(() => {
+    const w = window as unknown as Partial<SpritesheetGlobals>;
+    w.loadSpritesheet?.(() => {
       if (!isCancelled()) onReady();
     });
-  };
-  if (typeof w.loadSpritesheet === "function") {
-    start();
-    return;
-  }
-  const script = document.createElement("script");
-  script.src = "/games/arkanoid/spritesheet.js";
-  script.onload = start;
-  document.body.appendChild(script);
+  });
 }
 
 const CAPTURED_CODES: Record<string, boolean> = {
@@ -175,17 +227,18 @@ export default function ArkanoidGame({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
+    const ctx2d = canvas?.getContext("2d");
+    if (!canvas || !ctx2d) return;
+    const ctx: CanvasRenderingContext2D = ctx2d;
 
     let cancelled = false;
 
     const bounceSound = new Audio("/games/arkanoid/ball-bounce.mp3");
     const breakSound = new Audio("/games/arkanoid/break-sound.mp3");
     const playBounce = () =>
-      void bounceSound.cloneNode<HTMLAudioElement>(true).play();
+      void (bounceSound.cloneNode(true) as HTMLAudioElement).play();
     const playBreak = () =>
-      void breakSound.cloneNode<HTMLAudioElement>(true).play();
+      void (breakSound.cloneNode(true) as HTMLAudioElement).play();
 
     const keys: Record<string, boolean> = {
       ArrowLeft: false,
@@ -350,7 +403,7 @@ export default function ArkanoidGame({
       const w = window as unknown as Partial<SpritesheetGlobals>;
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, W, H);
-      if (!w.drawSprite || !w.drawFrame || !w.EXPLOSION_FRAMES) return;
+      if (!w.drawSprite || !w.drawFrame) return;
 
       for (const block of blocks) {
         if (block.alive)
@@ -371,7 +424,7 @@ export default function ArkanoidGame({
         );
         w.drawFrame(
           ctx,
-          w.EXPLOSION_FRAMES[exp.color][frameIndex],
+          EXPLOSION_FRAMES[exp.color][frameIndex],
           exp.x,
           exp.y,
           exp.w,
